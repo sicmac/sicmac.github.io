@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery App</title>
+  <style>
+    img { width: 150px; height: 150px; margin: 10px; }
+  </style>
+</head>
+<body>
+  <h1 id="welcome"></h1>
+  <input type="file" id="upload" accept="image/*">
+  <button id="addImage">Add to Gallery</button>
+  <div id="gallery"></div>
+
+  <script>
+    // Display saved username
+    const username = localStorage.getItem("username") || "Guest";
+    document.getElementById("welcome").textContent = `Welcome, ${username}!`;
+
+    // Initialize gallery from localStorage
+    const galleryDiv = document.getElementById("gallery");
+    const gallery = JSON.parse(localStorage.getItem("gallery")) || [];
+
+    function renderGallery() {
+      galleryDiv.innerHTML = ""; // Clear the gallery before rendering
+      gallery.forEach(imageData => {
+        const img = document.createElement("img");
+        img.src = imageData;
+        galleryDiv.appendChild(img);
+      });
+    }
+    renderGallery();
+
+    // Add new images to gallery
+    document.getElementById("addImage").addEventListener("click", () => {
+      const uploadInput = document.getElementById("upload");
+      const file = uploadInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          gallery.push(event.target.result); // Save Base64 data
+          localStorage.setItem("gallery", JSON.stringify(gallery));
+          renderGallery();
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>
